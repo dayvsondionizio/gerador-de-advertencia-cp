@@ -43,6 +43,7 @@ interface FormData {
   managerRole: string;
   occurrenceDate: string;
   occurrenceTime: string;
+  hasTime: boolean;
   description: string;
   witnesses: Witness[];
 }
@@ -74,6 +75,7 @@ export default function App() {
     managerRole: '',
     occurrenceDate: new Date().toISOString().split('T')[0],
     occurrenceTime: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    hasTime: true,
     description: '',
     witnesses: [{ id: Math.random().toString(36).substr(2, 9), name: '' }]
   });
@@ -150,6 +152,7 @@ export default function App() {
       managerRole: '',
       occurrenceDate: now.toISOString().split('T')[0],
       occurrenceTime: `${hours}:${minutes}`,
+      hasTime: true,
       description: '',
       witnesses: [{ id: Math.random().toString(36).substr(2, 9), name: '' }]
     });
@@ -391,14 +394,25 @@ export default function App() {
                       />
                     </InputGroup>
                     <InputGroup label="Hora" icon={Clock}>
-                      <input
-                        type="time"
-                        name="occurrenceTime"
-                        required
-                        value={formData.occurrenceTime}
-                        onChange={handleInputChange}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 outline-none transition-all"
-                      />
+                      <div className="space-y-2">
+                        <input
+                          type="time"
+                          name="occurrenceTime"
+                          value={formData.occurrenceTime}
+                          onChange={handleInputChange}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 outline-none transition-all"
+                        />
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            name="hasTime"
+                            checked={formData.hasTime}
+                            onChange={(e) => setFormData(prev => ({ ...prev, hasTime: e.target.checked }))}
+                            className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                          />
+                          <span className="text-xs text-slate-500">Incluir horário no documento</span>
+                        </label>
+                      </div>
                     </InputGroup>
                   </div>
                   <InputGroup label="Descrição do Ocorrido" icon={FileText}>
@@ -555,7 +569,7 @@ export default function App() {
 
                     <p>
                       Vimos por meio desta aplicar-lhe a presente <strong>ADVERTÊNCIA DISCIPLINAR ({formData.warningLevel.toUpperCase()})</strong>, 
-                      em virtude do fato ocorrido em <strong>{formatDateLong(formData.occurrenceDate)}</strong>, por volta das <strong>{formData.occurrenceTime}</strong>.
+                      em virtude do fato ocorrido em <strong>{formatDateLong(formData.occurrenceDate)}{formData.hasTime && formData.occurrenceTime ? `, por volta das ${formData.occurrenceTime}` : ''}</strong>.
                     </p>
 
                     <div className="bg-[#f8fafc] border-l-4 border-[#0f172a] p-4 rounded-r-xl italic text-[#334155] whitespace-pre-wrap break-words text-[9.5pt]">
